@@ -310,7 +310,7 @@ public class StatementScanner {
                             LiteralNode ln = (LiteralNode)pathExp;
                             Object obj = ln.getObject();
                             if(obj instanceof String) {
-                                String path = (String)obj;
+                                String path = ((String)obj).toLowerCase() + ".js";
                                 Vertex child = addOrGet(graph, path);
                                 graph.addEdge(null, this.vertex, child, "requires");
                             }
