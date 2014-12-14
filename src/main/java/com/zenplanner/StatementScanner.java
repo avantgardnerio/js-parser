@@ -36,7 +36,15 @@ public class StatementScanner {
     }
 
     private void processFunctionNode(FunctionNode node)  {
-        processBlock(node.getBody());
+        Block body = node.getBody();
+        IdentNode in = node.getIdent();
+        List<IdentNode> args = node.getParameters();
+
+        processBlock(body);
+        processIdentNode(in);
+        for(IdentNode arg : args) {
+            processIdentNode(arg);
+        }
     }
 
     private void processBlock(Block block) {
@@ -291,6 +299,8 @@ public class StatementScanner {
         if(func instanceof IdentNode) {
             IdentNode in = (IdentNode)func;
             String funcName = in.getName();
+            Vertex funcVert = addOrGet(graph, funcName);
+            graph.addEdge(null, this.vertex, funcVert, "calls");
             if("require".equals(funcName) || "define".equals(funcName)) {
                 if(exps.size() == 2 && exps.get(0) instanceof LiteralNode.ArrayLiteralNode) { // require([path1, path2], callback) {}
                     LiteralNode.ArrayLiteralNode arg0 = (LiteralNode.ArrayLiteralNode)exps.get(0);
@@ -302,7 +312,7 @@ public class StatementScanner {
                             if(obj instanceof String) {
                                 String path = (String)obj;
                                 Vertex child = addOrGet(graph, path);
-                                graph.addEdge(null, this.vertex, child, "child");
+                                graph.addEdge(null, this.vertex, child, "requires");
                             }
                         }
                     }
