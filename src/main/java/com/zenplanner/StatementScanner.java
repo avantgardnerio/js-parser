@@ -29,7 +29,8 @@ public class StatementScanner {
         this.folder = file.getParentFile();
 
         this.path = StatementScanner.makeRelative(root, file);
-        this.vertex = addOrGet(graph, this.path);
+        String className = namify(path);
+        this.vertex = addOrGet(graph, className);
     }
 
     public void scan(FunctionNode stmt) throws Exception {
@@ -341,11 +342,9 @@ public class StatementScanner {
                             LiteralNode ln = (LiteralNode)pathExp;
                             Object obj = ln.getObject();
                             if(obj instanceof String) {
-                                String path = ((String)obj).toLowerCase();
-                                if(!path.endsWith(".js") && !path.endsWith(".html")) {
-                                    path += ".js";
-                                }
-                                Vertex child = addOrGet(graph, path);
+                                String path = ((String)obj);
+                                String className = namify(path);
+                                Vertex child = addOrGet(graph, className);
                                 Edge e = graph.addEdge(null, this.vertex, child, "requires");
                                 e.setProperty("relation", "requires");
                             }
@@ -359,6 +358,14 @@ public class StatementScanner {
         for(Expression exp : exps) {
             processExpression(exp);
         }
+    }
+
+    private String namify(String path) {
+        String[] parts = path.split("/");
+        String className = parts[parts.length-1];
+        parts = className.split("\\.");
+        className = parts[0];
+        return className;
     }
 
     private void processLiteralNode(LiteralNode node) {
@@ -420,7 +427,7 @@ public class StatementScanner {
     }
 
     public static String makeRelative(File root, File child) {
-        String path = root.toURI().relativize(child.toURI()).getPath().toLowerCase();
+        String path = root.toURI().relativize(child.toURI()).getPath();
         if (path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
         }
