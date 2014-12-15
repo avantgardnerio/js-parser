@@ -41,7 +41,7 @@ public class StatementScanner {
         List<IdentNode> args = node.getParameters();
 
         String funcName = in.getName();
-        if(!funcName.contains(":")) { // Anonymous methods
+        if(!"runScript".equals(funcName) && !funcName.contains(":")) { // Nashhorn wrapper & Anonymous methods
             Vertex funcVert = addOrGet(graph, funcName);
             graph.addEdge(null, this.vertex, funcVert, "declares");
         }
