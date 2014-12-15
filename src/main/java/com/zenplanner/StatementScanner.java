@@ -1,6 +1,7 @@
 package com.zenplanner;
 
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import jdk.nashorn.internal.codegen.types.Type;
 import jdk.nashorn.internal.ir.*;
@@ -43,7 +44,8 @@ public class StatementScanner {
         String funcName = in.getName();
         if(!"runScript".equals(funcName) && !funcName.contains(":")) { // Nashhorn wrapper & Anonymous methods
             Vertex funcVert = addOrGet(graph, funcName);
-            graph.addEdge(null, this.vertex, funcVert, "declares");
+            Edge edge = graph.addEdge(null, this.vertex, funcVert, "declares");
+            edge.setProperty("relation", "declares");
         }
 
         processBlock(body);
@@ -217,7 +219,8 @@ public class StatementScanner {
                         IdentNode ine = (IdentNode)func;
                         String funcName = ine.getName();
                         Vertex funcVert = addOrGet(graph, funcName);
-                        graph.addEdge(null, this.vertex, funcVert, "extends");
+                        Edge edge = graph.addEdge(null, this.vertex, funcVert, "extends");
+                        edge.setProperty("relation", "extends");
                     }
                 }
             }
@@ -327,7 +330,8 @@ public class StatementScanner {
             IdentNode in = (IdentNode)func;
             String funcName = in.getName();
             Vertex funcVert = addOrGet(graph, funcName);
-            graph.addEdge(null, this.vertex, funcVert, "invokes");
+            Edge edge = graph.addEdge(null, this.vertex, funcVert, "invokes");
+            edge.setProperty("relation", "invokes");
             if("require".equals(funcName) || "define".equals(funcName)) {
                 if(exps.size() == 2 && exps.get(0) instanceof LiteralNode.ArrayLiteralNode) { // require([path1, path2], callback) {}
                     LiteralNode.ArrayLiteralNode arg0 = (LiteralNode.ArrayLiteralNode)exps.get(0);
@@ -342,7 +346,8 @@ public class StatementScanner {
                                     path += ".js";
                                 }
                                 Vertex child = addOrGet(graph, path);
-                                graph.addEdge(null, this.vertex, child, "requires");
+                                Edge e = graph.addEdge(null, this.vertex, child, "requires");
+                                e.setProperty("relation", "requires");
                             }
                         }
                     }
