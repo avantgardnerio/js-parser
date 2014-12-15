@@ -40,6 +40,12 @@ public class StatementScanner {
         IdentNode in = node.getIdent();
         List<IdentNode> args = node.getParameters();
 
+        String funcName = in.getName();
+        if(!funcName.contains(":")) { // Anonymous methods
+            Vertex funcVert = addOrGet(graph, funcName);
+            graph.addEdge(null, this.vertex, funcVert, "declares");
+        }
+
         processBlock(body);
         processIdentNode(in);
         for(IdentNode arg : args) {
@@ -300,7 +306,7 @@ public class StatementScanner {
             IdentNode in = (IdentNode)func;
             String funcName = in.getName();
             Vertex funcVert = addOrGet(graph, funcName);
-            graph.addEdge(null, this.vertex, funcVert, "calls");
+            graph.addEdge(null, this.vertex, funcVert, "invokes");
             if("require".equals(funcName) || "define".equals(funcName)) {
                 if(exps.size() == 2 && exps.get(0) instanceof LiteralNode.ArrayLiteralNode) { // require([path1, path2], callback) {}
                     LiteralNode.ArrayLiteralNode arg0 = (LiteralNode.ArrayLiteralNode)exps.get(0);
@@ -310,7 +316,10 @@ public class StatementScanner {
                             LiteralNode ln = (LiteralNode)pathExp;
                             Object obj = ln.getObject();
                             if(obj instanceof String) {
-                                String path = ((String)obj).toLowerCase() + ".js";
+                                String path = ((String)obj).toLowerCase();
+                                if(!path.endsWith(".js") && !path.endsWith(".html")) {
+                                    path += ".js";
+                                }
                                 Vertex child = addOrGet(graph, path);
                                 graph.addEdge(null, this.vertex, child, "requires");
                             }
