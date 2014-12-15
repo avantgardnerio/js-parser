@@ -202,8 +202,29 @@ public class StatementScanner {
 
     // var x = y;
     private void processVarNode(VarNode node) {
-        processIdentNode(node.getName());
-        processExpression(node.getInit());
+        IdentNode in = node.getName();
+        Expression exp = node.getInit();
+
+        String varName = in.getName();
+        if("self".equals(varName)) { // Nashhorn wrapper & Anonymous methods
+            if(exp.getClass() == UnaryNode.class) {
+                UnaryNode un = (UnaryNode)exp;
+                Expression rhs = un.rhs();
+                if(rhs.getClass() == CallNode.class) {
+                    CallNode call = (CallNode)rhs;
+                    Expression func = call.getFunction();
+                    if(func.getClass() == IdentNode.class) {
+                        IdentNode ine = (IdentNode)func;
+                        String funcName = ine.getName();
+                        Vertex funcVert = addOrGet(graph, funcName);
+                        graph.addEdge(null, this.vertex, funcVert, "extends");
+                    }
+                }
+            }
+        }
+
+        processIdentNode(in);
+        processExpression(exp);
     }
 
     private void processIdentNode(IdentNode node) {
