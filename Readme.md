@@ -1,4 +1,4 @@
-js-perser
+js-parser
 =========
 
 Parses your JavaScript, then dumps it into a graphml, where it can be:
