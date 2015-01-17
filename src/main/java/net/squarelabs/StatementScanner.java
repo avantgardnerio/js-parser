@@ -1,9 +1,8 @@
-package com.zenplanner;
+package net.squarelabs;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
-import jdk.nashorn.internal.codegen.types.Type;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.parser.Lexer;
 import org.apache.commons.lang.NotImplementedException;
@@ -116,8 +115,28 @@ public class StatementScanner {
             processContinueNode((ContinueNode) stmt);
             return;
         }
+        if(clazz == SwitchNode.class) {
+            processSwitchNode((SwitchNode) stmt);
+            return;
+        }
 
         throw new NotImplementedException();
+    }
+
+    private void processSwitchNode(SwitchNode node) {
+        Expression exp = node.getExpression();
+        List<CaseNode> cases = node.getCases();
+        processExpression(exp);
+        for(CaseNode cas : cases) {
+            processCaseNode(cas);
+        }
+    }
+
+    private void processCaseNode(CaseNode node) {
+        Expression exp = node.getTest();
+        Block body = node.getBody();
+        processExpression(exp);
+        processBlock(body);
     }
 
     private void processContinueNode(ContinueNode node) {

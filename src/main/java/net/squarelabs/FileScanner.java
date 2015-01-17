@@ -1,10 +1,8 @@
-package com.zenplanner;
+package net.squarelabs;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
-import jdk.nashorn.internal.ir.Block;
 import jdk.nashorn.internal.ir.FunctionNode;
-import jdk.nashorn.internal.ir.Statement;
 import jdk.nashorn.internal.parser.Parser;
 import jdk.nashorn.internal.runtime.Context;
 import jdk.nashorn.internal.runtime.ErrorManager;
