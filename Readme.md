@@ -4,8 +4,8 @@ js-parser
 Parses your JavaScript, then dumps it into a graphml, where it can be:
 
 * Imported into a graph database
-* Queried by Gremlin
-* Rendered with Gephi
+* Queried by [Gremlin](https://github.com/tinkerpop/gremlin)
+* Rendered with [Gephi](http://gephi.github.io/)
 
 ![Gephi](Gephi.png)
 
